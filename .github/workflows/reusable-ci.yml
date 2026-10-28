@@ -29,14 +29,29 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Test
-        run: npm test
-
       - name: Build
         run: npm run build --if-present
 
-  deploy:
+  test:
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout app code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+  deploy:
+    needs: test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
